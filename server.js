@@ -15,6 +15,15 @@ mongoose
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: ({ reg }) => {
+        let authToken = null;
+
+        try {
+            authToken = headers.authorization
+        } catch (e) {
+            new Error(e);
+        }
+    }
 });
 
 server.listen().then(({ url }) => {console.log('---Server listening on', url);});
