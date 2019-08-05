@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const PinSchema = mongoose.Schema({
+const PinSchema = new mongoose.Schema({
     title: String,
     content: String,
     image: String,
