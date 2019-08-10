@@ -4,24 +4,26 @@ import { GoogleLogin } from 'react-google-login';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
-import Context from '../../context';
+import UserContext from '../../context/userContext';
 import { ME_QUERY } from '../../graphql/queries';
+import { BASE_URL } from '../../Hook/client';
 
 const Login = ({ classes }) => {
-    const { dispatch } = useContext(Context);
+    const { dispatchUser } = useContext(UserContext);
 
     const onSuccess = async googleUser => {
         try {
             const idToken = googleUser.getAuthResponse().id_token;
 
-            const client = new GraphQLClient('http://localhost:4000/graphql', {
+            const client = new GraphQLClient(BASE_URL, {
                 headers: { authorization: idToken },
             });
 
             const { me } = await client.request(ME_QUERY);
 
-            dispatch({ type: 'LOGIN_USER', payload: me });
-            dispatch({type: 'IS_LOGGED_IN', payload: googleUser.isSignedIn()})
+            dispatchUser({ type: 'LOGIN_USER', payload: me });
+            dispatchUser({type: 'IS_LOGGED_IN', payload: googleUser.isSignedIn()});
+            dispatchUser({type: 'SET_ID_TOKEN', payload: idToken});
         } catch (err) {
             onFailure(err);
         }

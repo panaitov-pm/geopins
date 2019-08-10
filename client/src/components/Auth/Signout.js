@@ -4,13 +4,13 @@ import { withStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Typography from '@material-ui/core/Typography';
 
-import Context from '../../context';
+import UserContext from '../../context/userContext';
 
 const Signout = ({ classes }) => {
-    const { dispatch } = useContext(Context);
+    const { dispatchUser } = useContext(UserContext);
 
     const onSignout = () => {
-        dispatch({type: 'SIGNOUT_USER'})
+        dispatchUser({type: 'SIGNOUT_USER'})
     };
 
     return (

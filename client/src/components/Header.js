@@ -5,11 +5,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import MapIcon from '@material-ui/icons/Map';
 import Typography from '@material-ui/core/Typography';
 
-import Context from '../context';
+import UserContext from '../context/userContext';
 import Signout from './Auth/Signout';
 
 const Header = ({ classes }) => {
-    const { userInfo } = useContext(Context);
+    const { userInfo } = useContext(UserContext);
     const { currentUser } = userInfo;
 
     return (

@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactMapGL, { Marker } from 'react-map-gl';
 import { withStyles } from '@material-ui/core/styles';
+import differentInMinutes from 'date-fns/difference_in_minutes';
+
+import MapContext from '../context/mapContext';
+import Blog from './Blog';
 import PinIcon from './PinIcon';
+import { GET_PINS_QUERY } from '../graphql/queries';
+import { useClient } from '../Hook/client';
 // import Button from "@material-ui/core/Button";
 // import Typography from "@material-ui/core/Typography";
 // import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
@@ -9,10 +15,13 @@ import PinIcon from './PinIcon';
 const INITIAL_VIEWPORT = {
     latitude: 37.7577,
     longitude: -122.4376,
-    zoom: 13,
+    zoom: 17,
 };
 
 const Map = ({ classes }) => {
+    const { mapInfo, dispatchMap } = useContext(MapContext);
+    const client = useClient();
+
     const [viewport, setViewport] = useState(INITIAL_VIEWPORT);
     const [userPosition, setUserPosition] = useState(null);
 
@@ -27,12 +36,36 @@ const Map = ({ classes }) => {
         }
     };
 
-    const onMapClick = event => {
-        console.log('---event', event);
+    const onMapClick = ({ lngLat, leftButton }) => {
+
+        if(!leftButton) return;
+
+        if(!mapInfo.draft) {
+            dispatchMap({ type: 'CREATE_DRAFT' });
+        }
+
+        const [longitude, latitude] = lngLat;
+        dispatchMap({ type: 'UPDATE_DRAFT_LOCATION', payload: { latitude, longitude } });
+    };
+
+    const getPins = async () => {
+        const { getPins } = await client.request(GET_PINS_QUERY);
+
+        dispatchMap({ type: 'GET_PINS', payload: getPins });
+    };
+
+    const highlightNewPin = (pin) => {
+        const isNewPin = differentInMinutes(Date.now(), Number(pin.createdAt)) <= 30;
+
+        return isNewPin ? '#39e' : '#339';
     };
 
     useEffect(() => {
         getUserPosition();
+    }, []);
+
+    useEffect(() => {
+        getPins().then(r => r);
     }, []);
 
     return (
@@ -55,11 +88,40 @@ const Map = ({ classes }) => {
                             offsetLeft={-19}
                             offsetTop={-37}
                         >
-                            <PinIcon size={40} color="#669"/>
+                            <PinIcon size={40} color="#669" />
                         </Marker>
                     )
                 }
+                {
+                    mapInfo.draft && (
+                        <Marker
+                            latitude={mapInfo.draft.latitude}
+                            longitude={mapInfo.draft.longitude}
+                            offsetLeft={-19}
+                            offsetTop={-37}
+                        >
+                            <PinIcon size={40} color="#339" />
+                        </Marker>
+                    )
+                }
+
+                {/*    Create pins  */}
+                {
+                    mapInfo.pins.map(pin => (
+                        <Marker
+                            key={pin._id}
+                            latitude={pin.latitude}
+                            longitude={pin.longitude}
+                            offsetLeft={-19}
+                            offsetTop={-37}
+                        >
+                            <PinIcon size={40} color={highlightNewPin(pin)} />
+                        </Marker>
+                    ))
+                }
             </ReactMapGL>
+
+            <Blog />
         </div>
     );
 };

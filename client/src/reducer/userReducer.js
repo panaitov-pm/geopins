@@ -1,4 +1,4 @@
-export default function reducer(state, { type, payload }) {
+export default function userReducer(state, { type, payload }) {
     switch (type) {
         case 'LOGIN_USER':
             return {
@@ -15,6 +15,11 @@ export default function reducer(state, { type, payload }) {
                 ...state,
                 isAuth: false,
                 currentUser: null,
+            };
+        case 'SET_ID_TOKEN':
+            return {
+                ...state,
+                idToken: payload,
             };
         default:
             return state;

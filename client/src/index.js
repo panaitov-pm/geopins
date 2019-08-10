@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import App from './pages/App';
 import Splash from './pages/Splash';
-import Context from './context';
-import reducer from './reducer';
+import UserContext from './context/userContext';
+import UserReducer from './reducer/userReducer';
+import MapContext from './context/mapContext';
+import MapRedicer from './reducer/mapReducer';
 import ProtectedRoute from './ProtectedRoute';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -13,19 +15,24 @@ import * as serviceWorker from './serviceWorker';
 
 const Root = () => {
 
-    const initialState = useContext(Context);
-    const [userInfo, dispatch] = useReducer(reducer, initialState);
+    /*userContext*/
+    const initialUserState = useContext(UserContext);
+    const [userInfo, dispatchUser] = useReducer(UserReducer, initialUserState);
 
-    console.log('---state', {userInfo});
+    /*mapContext*/
+    const initialMapContext = useContext(MapContext);
+    const [mapInfo, dispatchMap] = useReducer(MapRedicer, initialMapContext);
 
     return (
         <Router>
-            <Context.Provider value={{userInfo, dispatch}}>
+            <UserContext.Provider value={{ userInfo, dispatchUser }}>
+                <MapContext.Provider value={{ mapInfo, dispatchMap }}>
                 <Switch>
                     <ProtectedRoute exact path="/" component={App} />
                     <Route path="/login" component={Splash} />
                 </Switch>
-            </Context.Provider>
+                </MapContext.Provider>
+            </UserContext.Provider>
         </Router>
     );
 };
