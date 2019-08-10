@@ -5,17 +5,31 @@ import { Paper } from '@material-ui/core';
 import MapContext from '../context/mapContext';
 import NoContent from './Pin/NoContent';
 import CreatePin from './Pin/CreatePin';
+import PinContent from './Pin/PinContent';
 
 const Blog = ({ classes }) => {
     const { mapInfo } = useContext(MapContext);
-    const { draft } = mapInfo;
+
+    const { draft, currentPin } = mapInfo;
+
+    const renderPinContent = () => {
+        if(!draft && !currentPin) {
+            return <NoContent />;
+        }
+
+        if(draft && !currentPin) {
+            return <CreatePin />;
+        }
+
+        if(!draft && currentPin) {
+            return <PinContent />;
+        }
+    };
 
     return (
         <Paper className={classes.root}>
             {
-                draft
-                    ? <CreatePin />
-                    : <NoContent />
+                renderPinContent()
             }
         </Paper>
     );

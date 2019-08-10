@@ -12,6 +12,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import UserContext from '../context/userContext';
 import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
+import { DELETE_PIN_MUTATION } from '../graphql/mutations';
 
 const INITIAL_VIEWPORT = {
     latitude: 37.7577,
@@ -70,6 +71,16 @@ const Map = ({ classes }) => {
     };
 
     const isAuthUser = () => userInfo.currentUser._id === popup.author._id;
+
+    const deletePin = async (pin) => {
+        const variables = {pinId: pin._id};
+        console.log('---pin', pin);
+       const {deletePin} = await client.request(DELETE_PIN_MUTATION, variables);
+        console.log('---deletedPin', deletePin);
+
+       dispatchMap({type: 'DELETE_PIN', payload: deletePin});
+       setPopup(null);
+    };
 
     useEffect(() => {
         getUserPosition();
@@ -155,7 +166,7 @@ const Map = ({ classes }) => {
                             </Typography>
                             {
                                 isAuthUser() && (
-                                    <Button>
+                                    <Button onClick={() => deletePin(popup)}>
                                         <DeleteIcon className={classes.deleteIcon}/>
                                     </Button>
                                 )
