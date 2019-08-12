@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
+import {Subscription} from 'react-apollo';
 import { withStyles } from '@material-ui/core/styles';
 import differentInMinutes from 'date-fns/difference_in_minutes';
 
@@ -176,6 +177,14 @@ const Map = ({ classes }) => {
                     </Popup>
                 )}
             </ReactMapGL>
+
+            {/*Subscriptions for Creating / Updated / Deleting Pins*/}
+            <Subscription
+            subscription={}
+            onSubscriptionData={({subscriptionData}) => {
+
+            }}
+            />
 
             <Blog />
         </div>

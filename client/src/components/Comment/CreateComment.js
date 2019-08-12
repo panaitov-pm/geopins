@@ -1,24 +1,44 @@
-import React from "react";
-import { withStyles } from "@material-ui/core";
-import InputBase from "@material-ui/core/InputBase";
-import IconButton from "@material-ui/core/IconButton";
-import ClearIcon from "@material-ui/icons/Clear";
-import SendIcon from "@material-ui/icons/Send";
-import Divider from "@material-ui/core/Divider";
+import React, { useState, useContext } from 'react';
+import { withStyles } from '@material-ui/core';
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import ClearIcon from '@material-ui/icons/Clear';
+import SendIcon from '@material-ui/icons/Send';
+import Divider from '@material-ui/core/Divider';
+import { useClient } from '../../Hook/client';
+import MapContext from '../../context/mapContext';
+import { CREATE_COMMENT_MUTATION } from '../../graphql/mutations';
 
 const CreateComment = ({ classes }) => {
+    const client = useClient();
+    const { mapInfo, dispatchMap } = useContext(MapContext);
+    const [comment, setComment] = useState('');
+    const isDisabled = !comment.trim();
+
+    const onSubmitComment = async () => {
+        const variables = { pinId: mapInfo.currentPin._id, text: comment };
+
+        const { createComment } = await client.request(CREATE_COMMENT_MUTATION, variables);
+
+        dispatchMap({type: 'CREATE_COMMENT', payload: createComment});
+
+        setComment('');
+    };
+
     return (
         <>
             <form action="" className={classes.form}>
-                <IconButton className={classes.clearButton}>
+                <IconButton onClick={() => setComment('')} disabled={isDisabled} className={classes.clearButton}>
                     <ClearIcon />
                 </IconButton>
                 <InputBase
                     className={classes.input}
                     placeholder="Add comment"
                     multiline={true}
+                    value={comment}
+                    onChange={e => setComment(e.target.value)}
                 />
-                <IconButton className={classes.sendButton}>
+                <IconButton onClick={onSubmitComment} disabled={isDisabled} className={classes.sendButton}>
                     <SendIcon />
                 </IconButton>
             </form>

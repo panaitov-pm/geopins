@@ -46,6 +46,16 @@ export default function mapReducer(state, { type, payload }) {
                 pins: filteredPins,
                 currentPin: null,
             };
+        case 'CREATE_COMMENT':
+            const updatedCommentPin = payload;
+            const updatedPins = state.pins.map(pin => {
+                return pin._id === updatedCommentPin._id ? updatedCommentPin : pin;
+            });
+            return {
+                ...state,
+                pins: updatedPins,
+                currentPin: updatedCommentPin,
+            };
         default:
             return state;
     }
