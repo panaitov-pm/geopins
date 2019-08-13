@@ -62,9 +62,7 @@ const CreatePin = ({ classes }) => {
                 longitude,
             };
 
-            const { createPin } = await client.request(CREATE_PIN_MUTATION, variables);
-
-            dispatchMap({type: 'CREATE_PIN', payload: createPin});
+            await client.request(CREATE_PIN_MUTATION, variables);
 
             onDeleteDraft();
         } catch (err) {

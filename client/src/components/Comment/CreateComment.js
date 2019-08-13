@@ -11,16 +11,14 @@ import { CREATE_COMMENT_MUTATION } from '../../graphql/mutations';
 
 const CreateComment = ({ classes }) => {
     const client = useClient();
-    const { mapInfo, dispatchMap } = useContext(MapContext);
+    const { mapInfo } = useContext(MapContext);
     const [comment, setComment] = useState('');
     const isDisabled = !comment.trim();
 
     const onSubmitComment = async () => {
         const variables = { pinId: mapInfo.currentPin._id, text: comment };
 
-        const { createComment } = await client.request(CREATE_COMMENT_MUTATION, variables);
-
-        dispatchMap({type: 'CREATE_COMMENT', payload: createComment});
+        await client.request(CREATE_COMMENT_MUTATION, variables);
 
         setComment('');
     };
